@@ -287,7 +287,7 @@ function floodFillStack(imageData, coordinate, toFlood, color, canvas) {
 
         var r = imageData.data[index];
         var g = imageData.data[index + 1];
-        var b = imageData.data[index + 2]
+        var b = imageData.data[index + 2];
 
         if (r == toFlood.r && g == toFlood.g && b == toFlood.b) {
             imageData.data[index] = color.r;
@@ -300,6 +300,37 @@ function floodFillStack(imageData, coordinate, toFlood, color, canvas) {
             tumpukan.push({ x: titik.x, y: titik.y + 1 });
             tumpukan.push({ x: titik.x, y: titik.y - 1 });
 
+        }
+    }
+}
+
+function floodFillStack2(imageData, coordinate, color, canvas) {
+    var tumpukan = [];
+    tumpukan.push({ x: coordinate.x, y: coordinate.y });
+
+    var targetIndex = getIndex({ x: coordinate.x, y: coordinate.y }, canvas);
+    var targetColor = { r: imageData.data[targetIndex], g: imageData.data[targetIndex], b: imageData.data[targetIndex] };
+
+    if (targetColor.r != color.r && targetColor.g != color.g && targetColor.b != color.b) {
+        while (tumpukan.length > 0) {
+            var titik = tumpukan.pop();
+            var index = getIndex(titik, canvas);
+
+            var r = imageData.data[index];
+            var g = imageData.data[index + 1];
+            var b = imageData.data[index + 2]
+
+            if (r == targetColor.r && g == targetColor.g && b == targetColor.b) {
+                imageData.data[index] = color.r;
+                imageData.data[index + 1] = color.g;
+                imageData.data[index + 2] = color.b;
+                imageData.data[index + 3] = color.a;
+
+                tumpukan.push({ x: titik.x + 1, y: titik.y });
+                tumpukan.push({ x: titik.x - 1, y: titik.y });
+                tumpukan.push({ x: titik.x, y: titik.y + 1 });
+                tumpukan.push({ x: titik.x, y: titik.y - 1 });
+            }
         }
     }
 }

@@ -126,6 +126,8 @@
 
         var ctx;
         ctx = mainCanvas.getContext("2d");
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
         var imageData = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
 
         var selected = null;
@@ -206,7 +208,7 @@
                     }
                     break;
                 case "fill":
-                    floodFillStack(imageData, coordinate, { r: 0, g: 0, b: 0 }, color, mainCanvas);
+                    floodFillStack2(imageData, coordinate, color, mainCanvas);
                     ctx.putImageData(imageData, 0, 0);
                     break;
             }
