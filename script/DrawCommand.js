@@ -172,6 +172,8 @@ function drawSimpleFullCircle(imageData, center, radius, color, canvas) {
             drawDot(imageData, { x: x, y: Math.round(center.y - root) }, color, canvas);
         }
     }
+    drawDot(imageData, center, color, canvas);
+
 }
 
 function drawCircle(imageData, center, radius, color, canvas) {
@@ -206,10 +208,11 @@ function drawFullCircle(imageData, center, radius, color, canvas) {
             drawDot(imageData, { x: Math.round(center.x - dy), y: Math.round(center.y - dx) }, color, canvas);
         }
     }
+    drawDot(imageData, center, color, canvas);
 }
 
 
-function drawElips(imageData, center, radiusX, radiusY, color, canvas) {
+function drawEllipse(imageData, center, radiusX, radiusY, color, canvas) {
     for (var x = 0; x < Math.PI * 2; x += 0.01) {
         var dx = center.x + radiusX * Math.cos(x);
         var dy = center.y + radiusY * Math.sin(x);
@@ -350,7 +353,7 @@ function scaleCircle(radius, scale) {
 function rotation(coordinate, angle) {
     var x = coordinate.x * Math.cos(angle) - coordinate.y * Math.sin(angle);
     var y = coordinate.x * Math.sin(angle) + coordinate.y * Math.cos(angle);
-    return { x: x, y: y };
+    return { x: Math.round(x), y: Math.round(y) };
 }
 
 function degToRad(deg) {

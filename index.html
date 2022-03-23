@@ -8,6 +8,7 @@
     <script src="script/DrawCommand.js"></script>
     <title>Test</title>
 
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
         * {
             box-sizing: border-box;
@@ -25,12 +26,12 @@
 
         .left,
         .right {
-            width: 24%;
+            width: 10%;
         }
 
 
         .middle {
-            width: 52%;
+            width: 90%;
         }
 
         .row:after {
@@ -55,6 +56,10 @@
             left: 0;
             right: 0;
         }
+
+        .buttonExtra {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -63,60 +68,108 @@
     </div>
 
     <div class="row">
-        <div class="column left">
-            <ul>
-                <li><input type="button" id="circle" onclick="Select(this)" value="Circle"></li>
-                <li><input type="button" id="polyline" onclick="Select(this)" value="Polyline"></li>
-                <li><input type="button" id="polygon" onclick="Select(this)" value="Polygon"></li>
-                <li><input type="button" id="fill" onclick="Select(this)" value="Fill"></li>
-                <li><input type="button" id="pen" onclick="Select(this)" value="Pen"></li>
-                <li><input type="button" id="cryon" onclick="Select(this)" value="Cryon"></li>
-                <li><input type="button" id="erase" onclick="Select(this)" value="Erase"></li>
-                <li><input type="button" id="export" onclick="DownloadAsPng()" value="Export Png"></li>
-            </ul>
+        <div class="column left w3-sidebar w3-light-grey w3-bar-block">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="pen" onclick="Select(this)" value="Pen">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="cryon" onclick="Select(this)"
+                value="Cryon">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="fill" onclick="Select(this)"
+                value="Fill">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="erase" onclick="Select(this)"
+                value="Erase">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="circle" onclick="Select(this)"
+                value="Circle">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="ellipse" onclick="Select(this)"
+                value="Ellipse">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="polyline" onclick="Select(this)"
+                value="Polyline">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="polygon" onclick="Select(this)"
+                value="Polygon">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="leaf" onclick="Select(this)"
+                value="Leaf">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="spiral" onclick="Select(this)"
+                value="spiral">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="cardiod" onclick="Select(this)"
+                value="Cardiod">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="gear" onclick="Select(this)"
+                value="Gear">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="export" onclick="DownloadAsPng()"
+                value="Export Png">
         </div>
 
+
         <div class="column middle">
-            <canvas id="mainCanvas" class="mainCanvas" width="750" height="750"></canvas>
+            <canvas id="mainCanvas" class="mainCanvas" width="1175" height="785"></canvas>
         </div>
 
         <div class="column right">
+            <h3>Attribute</h3>
             <div id="global">
                 <label for="color">Color</label><br>
-                <input type="color" value="#000000" id="color">
-            </div>
-
-            <div style="display: none;" id="circleGroup">
-                <label for="radius">Radius</label><br>
-                <input type="number" min="5" max="500" value="20" id="radius">
-            </div>
-
-            <div style="display: none;" id="polylineGroup">
-                <label for="polylineDot">Number of Dot</label><br>
-                <input type="number" min="3" max="500" value="3" id="polylineDot">
-            </div>
-
-            <div style="display: none;" id="polygonGroup">
-                <label for="polygonRadius">Radius</label><br>
-                <input type="number" min="2" max="500" value="20" id="polygonRadius">
-                <br>
-                <label for="polygonVertices">Vertices</label><br>
-                <input type="number" min="3" max="500" value="3" id="polygonVertices">
+                <input type="color" value="#000000" id="color" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="penGroup">
                 <label for="sizePen">Size</label><br>
-                <input type="number" min="1" max="10" value="5" id="sizePen">
+                <input type="number" min="1" max="10" value="5" id="sizePen" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="cryonGroup">
                 <label for="sizeCryon">Size</label><br>
-                <input type="number" min="1" max="10" value="5" id="sizeCryon">
+                <input type="number" min="1" max="10" value="5" id="sizeCryon" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="eraseGroup">
                 <label for="sizeErase">Size</label><br>
-                <input type="number" min="1" max="10" value="5" id="sizeErase">
+                <input type="number" min="1" max="10" value="5" id="sizeErase" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="circleGroup">
+                <label for="radius">Radius</label><br>
+                <input type="number" min="5" max="500" value="20" id="radius" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="ellipseGroup">
+                <label for="ellipseRadiusX">Radius X</label><br>
+                <input type="number" min="5" max="500" value="30" id="ellipseRadiusX" class="buttonExtra">
+
+                <label for="ellipseRadiusY">Radius Y</label><br>
+                <input type="number" min="5" max="500" value="20" id="ellipseRadiusY" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="polylineGroup">
+                <label for="polylineDot">Number of Dot</label><br>
+                <input type="number" min="3" max="500" value="3" id="polylineDot" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="polygonGroup">
+                <label for="polygonRadius">Radius</label><br>
+                <input type="number" min="2" max="500" value="20" id="polygonRadius" class="buttonExtra">
+                <br>
+                <label for="polygonVertices">Vertices</label><br>
+                <input type="number" min="3" max="500" value="3" id="polygonVertices" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="leafGroup">
+                <label for="leafRadius">Radius</label><br>
+                <input type="number" min="2" max="500" value="30" id="leafRadius" class="buttonExtra">
+                <br>
+                <label for="leafNum">Number of Leaf</label><br>
+                <input type="number" min="3" max="500" value="3" id="leafNum" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="spiralGroup">
+                <label for="spiralRadius">Radius</label><br>
+                <input type="number" min="5" max="500" value="10" id="spiralRadius" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="cardiodGroup">
+                <label for="cardiodRadius">Radius</label><br>
+                <input type="number" min="5" max="500" value="20" id="cardiodRadius" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="gearGroup">
+                <label for="gearRadius">Radius</label><br>
+                <input type="number" min="5" max="500" value="20" id="gearRadius" class="buttonExtra">
             </div>
         </div>
     </div>
@@ -179,10 +232,22 @@
             var color = HextoRGB(document.querySelector("#color").value);
             var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
             switch (selected) {
+                case "fill":
+                    floodFillStack2(imageData, coordinate, color, mainCanvas);
+                    ctx.putImageData(imageData, 0, 0);
+                    break;
                 case "circle":
                     var radius = document.querySelector("#radius").value;
                     if (radius > 0) {
                         drawCircle(imageData, coordinate, radius, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "ellipse":
+                    var radiusX = document.querySelector("#ellipseRadiusX").value;
+                    var radiusY = document.querySelector("#ellipseRadiusY").value;
+                    if (radiusX > 0 && radiusY > 0) {
+                        drawEllipse(imageData, coordinate, radiusX, radiusY, color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -200,7 +265,6 @@
                         }
                         ctx.putImageData(imageData, 0, 0);
                     }
-
                     break;
                 case "polygon":
                     var radiusPolygon = document.querySelector("#polygonRadius").value;
@@ -210,9 +274,34 @@
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
-                case "fill":
-                    floodFillStack2(imageData, coordinate, color, mainCanvas);
-                    ctx.putImageData(imageData, 0, 0);
+                case "leaf":
+                    var leafRadius = document.querySelector("#leafRadius").value;
+                    var leafNum = document.querySelector("#leafNum").value;
+                    if (leafRadius > 0 && leafNum > 0) {
+                        drawLeaf(imageData, coordinate, leafRadius, leafNum, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "spiral":
+                    var spiralRadius = document.querySelector("#spiralRadius").value;
+                    if (spiralRadius > 0) {
+                        drawSpiral(imageData, coordinate, spiralRadius, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "cardiod":
+                    var cardiodRadius = document.querySelector("#cardiodRadius").value;
+                    if (cardiodRadius > 0) {
+                        drawCardiod(imageData, coordinate, cardiodRadius, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "gear":
+                    var gearRadius = document.querySelector("#gearRadius").value;
+                    if (gearRadius > 0) {
+                        drawGear(imageData, coordinate, gearRadius, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
                     break;
             }
         });
@@ -252,20 +341,29 @@
             selected = null;
             polylineCoordinate = [];
 
-            document.querySelector("#circle").disabled = false;
-            document.querySelector("#circleGroup").style.display = "none";
-            document.querySelector("#cryon").disabled = false;
-            document.querySelector("#cryonGroup").style.display = "none";
             document.querySelector("#pen").disabled = false;
             document.querySelector("#penGroup").style.display = "none";
+            document.querySelector("#cryon").disabled = false;
+            document.querySelector("#cryonGroup").style.display = "none";
+            document.querySelector("#fill").disabled = false;
             document.querySelector("#erase").disabled = false;
             document.querySelector("#eraseGroup").style.display = "none";
+            document.querySelector("#circle").disabled = false;
+            document.querySelector("#circleGroup").style.display = "none";
+            document.querySelector("#ellipse").disabled = false;
+            document.querySelector("#ellipseGroup").style.display = "none";
             document.querySelector("#polyline").disabled = false;
             document.querySelector("#polylineGroup").style.display = "none";
             document.querySelector("#polygon").disabled = false;
             document.querySelector("#polygonGroup").style.display = "none";
-            document.querySelector("#fill").disabled = false;
-
+            document.querySelector("#leaf").disabled = false;
+            document.querySelector("#leafGroup").style.display = "none";
+            document.querySelector("#spiral").disabled = false;
+            document.querySelector("#spiralGroup").style.display = "none";
+            document.querySelector("#cardiod").disabled = false;
+            document.querySelector("#cardiodGroup").style.display = "none";
+            document.querySelector("#gear").disabled = false;
+            document.querySelector("#gearGroup").style.display = "none";
         }
 
         ctx.putImageData(imageData, 0, 0);
