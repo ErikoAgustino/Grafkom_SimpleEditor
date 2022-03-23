@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script/DrawCommand.js"></script>
+    <title>Test</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .column {
+            float: left;
+            padding: 16px;
+        }
+
+        .left,
+        .right {
+            width: 24%;
+        }
+
+
+        .middle {
+            width: 52%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .ghost {
+            position: absolute;
+            transition: 0s;
+            transform: translate(10%, -70%);
+            display: none;
+        }
+
+        .mainCanvas {
+            border: 2px solid black;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cursor" class="ghost">
+    </div>
+
+    <div class="row">
+        <div class="column left">
+            <ul>
+                <li><input type="button" id="circle" onclick="Select(this)" value="Circle"></li>
+                <li><input type="button" id="polyline" onclick="Select(this)" value="Polyline"></li>
+                <li><input type="button" id="polygon" onclick="Select(this)" value="Polygon"></li>
+                <li><input type="button" id="fill" onclick="Select(this)" value="fill"></li>
+                <li><input type="button" id="draw" onclick="Select(this)" value="Draw"></li>
+                <li><input type="button" id="erase" onclick="Select(this)" value="Erase"></li>
+            </ul>
+        </div>
+
+        <div class="column middle">
+            <canvas id="mainCanvas" class="mainCanvas" width="750" height="750"></canvas>
+        </div>
+
+        <div class="column right">
+            <div id="global">
+                <label for="color">Color</label><br>
+                <input type="color" value="#000000" id="color">
+            </div>
+
+            <div style="display: none;" id="circleGroup">
+                <label for="radius">Radius</label><br>
+                <input type="number" min="5" max="500" value="5" id="radius">
+            </div>
+
+            <div style="display: none;" id="polylineGroup">
+                <label for="polylineDot">Number of Dot</label><br>
+                <input type="number" min="2" max="500" value="2" id="polylineDot">
+            </div>
+
+            <div style="display: none;" id="polygonGroup">
+                <label for="polygonRadius">Radius</label><br>
+                <input type="number" min="2" max="500" value="2" id="polygonRadius">
+                <br>
+                <label for="polygonVertices">Vertices</label><br>
+                <input type="number" min="2" max="500" value="2" id="polygonVertices">
+            </div>
+
+            <div style="display: none;" id="drawGroup">
+                <label for="sizeDraw">Size</label><br>
+                <input type="number" min="1" max="10" value="5" id="sizeDraw">
+            </div>
+
+            <div style="display: none;" id="eraseGroup">
+                <label for="sizeErase">Size</label><br>
+                <input type="number" min="1" max="10" value="5" id="sizeErase">
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        mainCanvas = document.querySelector("#mainCanvas");
+
+        var ctx;
+        ctx = mainCanvas.getContext("2d");
+        var imageData = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+
+        var selected = null;
+        var polylineCoordinate = [];
+        var cursor = document.querySelector("#cursor");
+
+        var isMouseDown = false;
+
+        mainCanvas.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+        });
+
+        mainCanvas.addEventListener('mouseup', (e) => {
+            isMouseDown = false;
+        });
+
+        //Draw and Erase
+        mainCanvas.addEventListener('mousemove', (e) => {
+            if (selected != null) {
+                cursor.style.left = e.clientX + "px";
+                cursor.style.top = e.clientY + "px";
+            }
+            if (selected == "erase" && isMouseDown) {
+                var size = document.querySelector("#sizeErase").value;
+                var coordinates = [];
+
+                coordinates.push({ x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop });
+                for (var x = 1; x < size; x++) {
+                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft + x, y: e.clientY - mainCanvas.offsetTop });
+                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft - x, y: e.clientY - mainCanvas.offsetTop });
+                }
+
+                drawDots(imageData, coordinates, { r: 255, g: 255, b: 255, a: 255 }, mainCanvas);
+                ctx.putImageData(imageData, 0, 0);
+            } else if (selected == "draw" && isMouseDown) {
+                var size = document.querySelector("#sizeDraw").value;
+                var color = HextoRGB(document.querySelector("#color").value);
+                var coordinates = [];
+
+                coordinates.push({ x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop });
+                for (var x = 1; x < size; x++) {
+                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft + x, y: e.clientY - mainCanvas.offsetTop });
+                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft - x, y: e.clientY - mainCanvas.offsetTop });
+                }
+
+                drawDots(imageData, coordinates, color, mainCanvas);
+                ctx.putImageData(imageData, 0, 0);
+            }
+        });
+
+        //Object 2d
+        mainCanvas.addEventListener('click', (e) => {
+            var color = HextoRGB(document.querySelector("#color").value);
+            var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
+            switch (selected) {
+                case "circle":
+                    var radius = document.querySelector("#radius").value;
+                    if (radius > 0) {
+                        drawCircle(imageData, coordinate, radius, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "polyline":
+                    var num = document.querySelector("#polylineDot").value;
+                    if (num > 0) {
+                        polylineCoordinate.push(coordinate);
+                        document.querySelector("#polylineDot").value -= 1;
+                    }
+                    if (num == 1) {
+                        if (polylineCoordinate.length > 1) {
+                            drawPolyline(imageData, polylineCoordinate, color, mainCanvas);
+                            ctx.putImageData(imageData, 0, 0);
+                        }
+                        polylineCoordinate = [];
+                    }
+                    break;
+                case "polygon":
+                    var radiusPolygon = document.querySelector("#polygonRadius").value;
+                    var vertices = document.querySelector("#polygonVertices").value;
+                    if (radiusPolygon > 0 && vertices > 0) {
+                        drawPolygonFixed(imageData, coordinate, radiusPolygon, vertices, color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                        console.log("draw");
+                    }
+                    break;
+                case "fill":
+                    floodFillStack(imageData, coordinate, { r: 0, g: 0, b: 0 }, color, mainCanvas);
+                    ctx.putImageData(imageData, 0, 0);
+                    break;
+            }
+        });
+
+
+        function Select(data) {
+            reset();
+            document.querySelector("#" + data.id).disabled = true;
+            try {
+                document.querySelector("#" + data.id + "Group").style.display = "block";
+            } catch (e) {
+                console.log("no attribute")
+            }
+            // cursor.style.display = "block";
+            // var text = document.createTextNode(data.id);
+            // cursor.appendChild(text);
+            selected = data.id;
+        }
+
+        function HextoRGB(hex) {
+            var r = parseInt(hex.substr(1, 2), 16);
+            var g = parseInt(hex.substr(3, 2), 16);
+            var b = parseInt(hex.substr(5, 2), 16);
+            return { r: r, g: g, b: b, a: 255 };
+        }
+
+        function reset() {
+            selected = null;
+            polylineCoordinate = [];
+
+            document.querySelector("#circle").disabled = false;
+            document.querySelector("#circleGroup").style.display = "none";
+            document.querySelector("#draw").disabled = false;
+            document.querySelector("#drawGroup").style.display = "none";
+            document.querySelector("#erase").disabled = false;
+            document.querySelector("#eraseGroup").style.display = "none";
+            document.querySelector("#polyline").disabled = false;
+            document.querySelector("#polylineGroup").style.display = "none";
+            document.querySelector("#polygon").disabled = false;
+            document.querySelector("#polygonGroup").style.display = "none";
+            document.querySelector("#fill").disabled = false;
+
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+    </script>
+</body>
+
+</html>
