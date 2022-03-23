@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="script/DrawCommand.js"></script>
-    <title>Test</title>
+    <title>Simple Editor</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
@@ -87,7 +87,7 @@
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="leaf" onclick="Select(this)"
                 value="Leaf">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="spiral" onclick="Select(this)"
-                value="spiral">
+                value="Spiral">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="cardiod" onclick="Select(this)"
                 value="Cardiod">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="gear" onclick="Select(this)"
@@ -147,6 +147,9 @@
                 <br>
                 <label for="polygonVertices">Vertices</label><br>
                 <input type="number" min="3" max="500" value="3" id="polygonVertices" class="buttonExtra">
+                <br>
+                <label for="polygonRotation">Rotation</label><br>
+                <input type="number" min="3" max="500" value="0" id="polygonRotation" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="leafGroup">
@@ -182,6 +185,7 @@
         ctx = mainCanvas.getContext("2d");
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+
         var imageData = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
 
         var selected = null;
@@ -239,7 +243,7 @@
                 case "circle":
                     var radius = document.querySelector("#radius").value;
                     if (radius > 0) {
-                        drawCircle(imageData, coordinate, radius, color, mainCanvas);
+                        drawCircle(imageData, coordinate, parseInt(radius), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -247,7 +251,7 @@
                     var radiusX = document.querySelector("#ellipseRadiusX").value;
                     var radiusY = document.querySelector("#ellipseRadiusY").value;
                     if (radiusX > 0 && radiusY > 0) {
-                        drawEllipse(imageData, coordinate, radiusX, radiusY, color, mainCanvas);
+                        drawEllipse(imageData, coordinate, parseInt(radiusX), parseInt(radiusY), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -269,8 +273,9 @@
                 case "polygon":
                     var radiusPolygon = document.querySelector("#polygonRadius").value;
                     var vertices = document.querySelector("#polygonVertices").value;
+                    var angle = document.querySelector("#polygonRotation").value;
                     if (radiusPolygon > 0 && vertices > 0) {
-                        drawPolygonFixed(imageData, coordinate, radiusPolygon, vertices, color, mainCanvas);
+                        drawPolygonFixed(imageData, coordinate, parseInt(radiusPolygon), parseInt(vertices), parseInt(angle), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -278,28 +283,28 @@
                     var leafRadius = document.querySelector("#leafRadius").value;
                     var leafNum = document.querySelector("#leafNum").value;
                     if (leafRadius > 0 && leafNum > 0) {
-                        drawLeaf(imageData, coordinate, leafRadius, leafNum, color, mainCanvas);
+                        drawLeaf(imageData, coordinate, parseInt(leafRadius), parseInt(leafNum), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
                 case "spiral":
                     var spiralRadius = document.querySelector("#spiralRadius").value;
                     if (spiralRadius > 0) {
-                        drawSpiral(imageData, coordinate, spiralRadius, color, mainCanvas);
+                        drawSpiral(imageData, coordinate, parseInt(spiralRadius), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
                 case "cardiod":
                     var cardiodRadius = document.querySelector("#cardiodRadius").value;
                     if (cardiodRadius > 0) {
-                        drawCardiod(imageData, coordinate, cardiodRadius, color, mainCanvas);
+                        drawCardiod(imageData, coordinate, parseInt(cardiodRadius), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
                 case "gear":
                     var gearRadius = document.querySelector("#gearRadius").value;
                     if (gearRadius > 0) {
-                        drawGear(imageData, coordinate, gearRadius, color, mainCanvas);
+                        drawGear(imageData, coordinate, parseInt(gearRadius), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;

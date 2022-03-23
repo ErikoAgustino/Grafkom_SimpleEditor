@@ -142,14 +142,14 @@ function drawPolygon(imageData, coordinates, color, canvas) {
     garis(imageData, tempCoordinate, coordinates[0], color, canvas)
 }
 
-function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, color, canvas) {
+function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, rotate, color, canvas) {
     var angle = Math.PI * 2 / vertices;
     var coordinates = [];
 
     for (var x = 0; x < vertices; x++) {
         var coX = radius * Math.sin(angle * x);
         var coY = -radius * Math.cos(angle * x);
-        coordinates.push({ x: Math.round(coX + coordinateCenter.x), y: Math.round(coY + coordinateCenter.y) });
+        coordinates.push(rotationFixed({ x: Math.round(coX + coordinateCenter.x), y: Math.round(coY + coordinateCenter.y) }, coordinateCenter, degToRad(rotate)));
     }
     drawPolygon(imageData, coordinates, color, canvas);
 }
@@ -241,7 +241,7 @@ function drawSpiral(imageData, center, radius, color, canvas) {
 }
 
 function drawCardiod(imageData, center, radius, color, canvas) {
-    for (var x = 0; x < Math.PI * 2; x += 0.01) {
+    for (var x = 0; x <= Math.PI * 2; x += 0.01) {
         var dx = center.x + (radius + radius * Math.sin(x)) * Math.cos(x);
         var dy = center.y + (radius + radius * Math.sin(x)) * Math.sin(x);
 
@@ -251,9 +251,9 @@ function drawCardiod(imageData, center, radius, color, canvas) {
 
 function drawGear(imageData, center, radius, color, canvas) {
     var o = 0;
-    for (var x = 0; x < Math.PI * 2; x += 1 / radius) {
-        var dx = center.x + (radius + 10 * Math.sin(o)) * Math.cos(x);
-        var dy = center.y + (radius + 10 * Math.sin(o)) * Math.sin(x);
+    for (var x = 0; x <= Math.PI * 2; x += 1 / radius) {
+        var dx = center.x + (radius - 20 * Math.sin(o)) * Math.cos(x);
+        var dy = center.y + (radius - 20 * Math.sin(o)) * Math.sin(x);
         o += 30 / radius;
 
         drawDot(imageData, { x: Math.ceil(dx), y: Math.ceil(dy) }, color, canvas);
