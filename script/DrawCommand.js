@@ -60,11 +60,74 @@ function ddaLine(imageData, coordinate1, coordinate2, color, canvas) {
     }
 }
 
+function garis(img, coordinate1, coordinate2, color, canvas) {
+    var x1 = coordinate1.x;
+    var y1 = coordinate1.y;
+    var x2 = coordinate2.x;
+    var y2 = coordinate2.y;
+
+    if (Math.abs(x2 - x1) == 0 || Math.abs(y2 - y1) == 0) {
+        m = 0
+    }
+    else {
+        m = Math.abs(x2 - x1) / Math.abs(y2 - y1)
+    }
+    x = x1
+    y = y1
+    while ((Math.round(x) != x2) || (Math.round(y) != y2)) {
+        drawDot(img, { x: Math.round(x), y: Math.round(y) }, color, canvas);
+        if (m == 0 || m == 1) {
+            if (x < x2) {
+                x += 1
+            }
+            else if (x > x2) {
+                x -= 1
+            }
+            if (y < y2) {
+                y += 1
+            }
+            else if (y > y2) {
+                y -= 1
+            }
+        }
+        else {
+            if (m < 1) {
+                if (x < x2) {
+                    x += m
+                }
+                else if (x > x2) {
+                    x -= m
+                }
+                if (y < y2) {
+                    y += 1
+                }
+                else if (y > y2) {
+                    y -= 1
+                }
+            }
+            else {
+                if (x < x2) {
+                    x += 1
+                }
+                else if (x > x2) {
+                    x -= 1
+                }
+                if (y < y2) {
+                    y += 1 / m
+                }
+                else if (y > y2) {
+                    y -= 1 / m
+                }
+            }
+        }
+    }
+}
+
 function drawPolyline(imageData, coordinates, color, canvas) {
     var tempCoordinate = coordinates.shift();
 
     coordinates.forEach(element => {
-        ddaLine(imageData, tempCoordinate, element, color, canvas);
+        garis(imageData, tempCoordinate, element, color, canvas);
         tempCoordinate = element;
     });
 }
@@ -73,10 +136,10 @@ function drawPolygon(imageData, coordinates, color, canvas) {
     var tempCoordinate = coordinates[0];
 
     for (var index = 1; index < coordinates.length; index++) {
-        ddaLine(imageData, tempCoordinate, coordinates[index], color, canvas)
+        garis(imageData, tempCoordinate, coordinates[index], color, canvas)
         tempCoordinate = coordinates[index];
     };
-    ddaLine(imageData, tempCoordinate, coordinates[0], color, canvas)
+    garis(imageData, tempCoordinate, coordinates[0], color, canvas)
 }
 
 function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, color, canvas) {
@@ -98,6 +161,17 @@ function drawSimpleCircle(imageData, center, radius, color, canvas) {
         drawDot(imageData, { x: x, y: Math.round(center.y + root) }, color, canvas);
         drawDot(imageData, { x: x, y: Math.round(center.y - root) }, color, canvas);
     }
+
+}
+
+function drawSimpleFullCircle(imageData, center, radius, color, canvas) {
+    for (var rad = radius; rad > 0; rad--) {
+        for (var x = center.x - rad; x <= center.x + rad; x++) {
+            var root = Math.sqrt(Math.pow(rad, 2) - Math.pow(x - center.x, 2));
+            drawDot(imageData, { x: x, y: Math.round(center.y + root) }, color, canvas);
+            drawDot(imageData, { x: x, y: Math.round(center.y - root) }, color, canvas);
+        }
+    }
 }
 
 function drawCircle(imageData, center, radius, color, canvas) {
@@ -113,6 +187,24 @@ function drawCircle(imageData, center, radius, color, canvas) {
         drawDot(imageData, { x: Math.round(center.x - dy), y: Math.round(center.y + dx) }, color, canvas);
         drawDot(imageData, { x: Math.round(center.x + dy), y: Math.round(center.y - dx) }, color, canvas);
         drawDot(imageData, { x: Math.round(center.x - dy), y: Math.round(center.y - dx) }, color, canvas);
+    }
+}
+
+function drawFullCircle(imageData, center, radius, color, canvas) {
+    for (var rad = radius; rad > 0; rad--) {
+        for (var x = 0; x <= 0.25 * Math.PI; x += 1 / (2 * rad)) {
+            var dx = rad * Math.cos(x);
+            var dy = rad * Math.sin(x);
+
+            drawDot(imageData, { x: Math.round(center.x + dx), y: Math.round(center.y + dy) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x - dx), y: Math.round(center.y + dy) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x + dx), y: Math.round(center.y - dy) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x - dx), y: Math.round(center.y - dy) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x + dy), y: Math.round(center.y + dx) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x - dy), y: Math.round(center.y + dx) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x + dy), y: Math.round(center.y - dx) }, color, canvas);
+            drawDot(imageData, { x: Math.round(center.x - dy), y: Math.round(center.y - dx) }, color, canvas);
+        }
     }
 }
 

@@ -69,7 +69,8 @@
                 <li><input type="button" id="polyline" onclick="Select(this)" value="Polyline"></li>
                 <li><input type="button" id="polygon" onclick="Select(this)" value="Polygon"></li>
                 <li><input type="button" id="fill" onclick="Select(this)" value="fill"></li>
-                <li><input type="button" id="draw" onclick="Select(this)" value="Draw"></li>
+                <li><input type="button" id="pen" onclick="Select(this)" value="Pen"></li>
+                <li><input type="button" id="cryon" onclick="Select(this)" value="Cryon"></li>
                 <li><input type="button" id="erase" onclick="Select(this)" value="Erase"></li>
             </ul>
         </div>
@@ -102,9 +103,14 @@
                 <input type="number" min="2" max="500" value="2" id="polygonVertices">
             </div>
 
-            <div style="display: none;" id="drawGroup">
-                <label for="sizeDraw">Size</label><br>
-                <input type="number" min="1" max="10" value="5" id="sizeDraw">
+            <div style="display: none;" id="penGroup">
+                <label for="sizePen">Size</label><br>
+                <input type="number" min="1" max="10" value="5" id="sizePen">
+            </div>
+
+            <div style="display: none;" id="cryonGroup">
+                <label for="sizeCryon">Size</label><br>
+                <input type="number" min="1" max="10" value="5" id="sizeCryon">
             </div>
 
             <div style="display: none;" id="eraseGroup">
@@ -144,28 +150,23 @@
             }
             if (selected == "erase" && isMouseDown) {
                 var size = document.querySelector("#sizeErase").value;
-                var coordinates = [];
+                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
 
-                coordinates.push({ x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop });
-                for (var x = 1; x < size; x++) {
-                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft + x, y: e.clientY - mainCanvas.offsetTop });
-                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft - x, y: e.clientY - mainCanvas.offsetTop });
-                }
-
-                drawDots(imageData, coordinates, { r: 255, g: 255, b: 255, a: 255 }, mainCanvas);
+                drawFullCircle(imageData, coordinate, size, { r: 255, g: 255, b: 255, a: 255 }, mainCanvas);
                 ctx.putImageData(imageData, 0, 0);
-            } else if (selected == "draw" && isMouseDown) {
-                var size = document.querySelector("#sizeDraw").value;
+            } else if (selected == "cryon" && isMouseDown) {
+                var size = document.querySelector("#sizeCryon").value;
                 var color = HextoRGB(document.querySelector("#color").value);
-                var coordinates = [];
+                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
 
-                coordinates.push({ x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop });
-                for (var x = 1; x < size; x++) {
-                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft + x, y: e.clientY - mainCanvas.offsetTop });
-                    coordinates.push({ x: e.clientX - mainCanvas.offsetLeft - x, y: e.clientY - mainCanvas.offsetTop });
-                }
+                drawSimpleFullCircle(imageData, coordinate, size, color, mainCanvas);
+                ctx.putImageData(imageData, 0, 0);
+            } else if (selected == "pen" && isMouseDown) {
+                var size = document.querySelector("#sizeCryon").value;
+                var color = HextoRGB(document.querySelector("#color").value);
+                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
 
-                drawDots(imageData, coordinates, color, mainCanvas);
+                drawFullCircle(imageData, coordinate, size, color, mainCanvas);
                 ctx.putImageData(imageData, 0, 0);
             }
         });
@@ -202,7 +203,6 @@
                     if (radiusPolygon > 0 && vertices > 0) {
                         drawPolygonFixed(imageData, coordinate, radiusPolygon, vertices, color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
-                        console.log("draw");
                     }
                     break;
                 case "fill":
@@ -240,8 +240,10 @@
 
             document.querySelector("#circle").disabled = false;
             document.querySelector("#circleGroup").style.display = "none";
-            document.querySelector("#draw").disabled = false;
-            document.querySelector("#drawGroup").style.display = "none";
+            document.querySelector("#cryon").disabled = false;
+            document.querySelector("#cryonGroup").style.display = "none";
+            document.querySelector("#pen").disabled = false;
+            document.querySelector("#penGroup").style.display = "none";
             document.querySelector("#erase").disabled = false;
             document.querySelector("#eraseGroup").style.display = "none";
             document.querySelector("#polyline").disabled = false;
