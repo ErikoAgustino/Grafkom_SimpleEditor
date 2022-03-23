@@ -240,7 +240,7 @@ function drawSpiral(imageData, center, radius, color, canvas) {
     }
 }
 
-function drawCardiod(imageData, center, radius, color, canvas) {
+function drawcardioid(imageData, center, radius, color, canvas) {
     for (var x = 0; x <= Math.PI * 2; x += 0.01) {
         var dx = center.x + (radius + radius * Math.sin(x)) * Math.cos(x);
         var dy = center.y + (radius + radius * Math.sin(x)) * Math.sin(x);

@@ -88,8 +88,8 @@
                 value="Leaf">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="spiral" onclick="Select(this)"
                 value="Spiral">
-            <input type="button" class="w3-bar-item w3-button buttonExtra" id="cardiod" onclick="Select(this)"
-                value="Cardiod">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="cardioid" onclick="Select(this)"
+                value="Cardioid">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="gear" onclick="Select(this)"
                 value="Gear">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="export" onclick="DownloadAsPng()"
@@ -165,9 +165,9 @@
                 <input type="number" min="5" max="500" value="10" id="spiralRadius" class="buttonExtra">
             </div>
 
-            <div style="display: none;" id="cardiodGroup">
-                <label for="cardiodRadius">Radius</label><br>
-                <input type="number" min="5" max="500" value="20" id="cardiodRadius" class="buttonExtra">
+            <div style="display: none;" id="cardioidGroup">
+                <label for="cardioidRadius">Radius</label><br>
+                <input type="number" min="5" max="500" value="20" id="cardioidRadius" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="gearGroup">
@@ -294,10 +294,10 @@
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
-                case "cardiod":
-                    var cardiodRadius = document.querySelector("#cardiodRadius").value;
-                    if (cardiodRadius > 0) {
-                        drawCardiod(imageData, coordinate, parseInt(cardiodRadius), color, mainCanvas);
+                case "cardioid":
+                    var cardioidRadius = document.querySelector("#cardioidRadius").value;
+                    if (cardioidRadius > 0) {
+                        drawcardioid(imageData, coordinate, parseInt(cardioidRadius), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -365,8 +365,8 @@
             document.querySelector("#leafGroup").style.display = "none";
             document.querySelector("#spiral").disabled = false;
             document.querySelector("#spiralGroup").style.display = "none";
-            document.querySelector("#cardiod").disabled = false;
-            document.querySelector("#cardiodGroup").style.display = "none";
+            document.querySelector("#cardioid").disabled = false;
+            document.querySelector("#cardioidGroup").style.display = "none";
             document.querySelector("#gear").disabled = false;
             document.querySelector("#gearGroup").style.display = "none";
         }
