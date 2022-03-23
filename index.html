@@ -68,10 +68,11 @@
                 <li><input type="button" id="circle" onclick="Select(this)" value="Circle"></li>
                 <li><input type="button" id="polyline" onclick="Select(this)" value="Polyline"></li>
                 <li><input type="button" id="polygon" onclick="Select(this)" value="Polygon"></li>
-                <li><input type="button" id="fill" onclick="Select(this)" value="fill"></li>
+                <li><input type="button" id="fill" onclick="Select(this)" value="Fill"></li>
                 <li><input type="button" id="pen" onclick="Select(this)" value="Pen"></li>
                 <li><input type="button" id="cryon" onclick="Select(this)" value="Cryon"></li>
                 <li><input type="button" id="erase" onclick="Select(this)" value="Erase"></li>
+                <li><input type="button" id="export" onclick="DownloadAsPng()" value="Export Png"></li>
             </ul>
         </div>
 
@@ -87,20 +88,20 @@
 
             <div style="display: none;" id="circleGroup">
                 <label for="radius">Radius</label><br>
-                <input type="number" min="5" max="500" value="5" id="radius">
+                <input type="number" min="5" max="500" value="20" id="radius">
             </div>
 
             <div style="display: none;" id="polylineGroup">
                 <label for="polylineDot">Number of Dot</label><br>
-                <input type="number" min="2" max="500" value="2" id="polylineDot">
+                <input type="number" min="3" max="500" value="3" id="polylineDot">
             </div>
 
             <div style="display: none;" id="polygonGroup">
                 <label for="polygonRadius">Radius</label><br>
-                <input type="number" min="2" max="500" value="2" id="polygonRadius">
+                <input type="number" min="2" max="500" value="20" id="polygonRadius">
                 <br>
                 <label for="polygonVertices">Vertices</label><br>
-                <input type="number" min="2" max="500" value="2" id="polygonVertices">
+                <input type="number" min="3" max="500" value="3" id="polygonVertices">
             </div>
 
             <div style="display: none;" id="penGroup">
@@ -189,15 +190,17 @@
                     var num = document.querySelector("#polylineDot").value;
                     if (num > 0) {
                         polylineCoordinate.push(coordinate);
+                        drawDot(imageData, coordinate, color, mainCanvas);
                         document.querySelector("#polylineDot").value -= 1;
-                    }
-                    if (num == 1) {
-                        if (polylineCoordinate.length > 1) {
-                            drawPolyline(imageData, polylineCoordinate, color, mainCanvas);
-                            ctx.putImageData(imageData, 0, 0);
+                        if (num == 1) {
+                            if (polylineCoordinate.length > 1) {
+                                drawPolyline(imageData, polylineCoordinate, color, mainCanvas);
+                            }
+                            polylineCoordinate = [];
                         }
-                        polylineCoordinate = [];
+                        ctx.putImageData(imageData, 0, 0);
                     }
+
                     break;
                 case "polygon":
                     var radiusPolygon = document.querySelector("#polygonRadius").value;
@@ -234,6 +237,15 @@
             var g = parseInt(hex.substr(3, 2), 16);
             var b = parseInt(hex.substr(5, 2), 16);
             return { r: r, g: g, b: b, a: 255 };
+        }
+
+        //https://gist.github.com/Kaundur/2aca9a9edb003555f44195e826af4084
+        function DownloadAsPng() {
+            var image = mainCanvas.toDataURL();
+            var downloadLink = document.createElement("a");
+            downloadLink.download = "image.png";
+            downloadLink.href = image;
+            downloadLink.click();
         }
 
         function reset() {

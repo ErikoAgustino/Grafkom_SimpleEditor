@@ -309,9 +309,9 @@ function floodFillStack2(imageData, coordinate, color, canvas) {
     tumpukan.push({ x: coordinate.x, y: coordinate.y });
 
     var targetIndex = getIndex({ x: coordinate.x, y: coordinate.y }, canvas);
-    var targetColor = { r: imageData.data[targetIndex], g: imageData.data[targetIndex], b: imageData.data[targetIndex] };
+    var targetColor = { r: imageData.data[targetIndex], g: imageData.data[targetIndex + 1], b: imageData.data[targetIndex + 2] };
 
-    if (targetColor.r != color.r && targetColor.g != color.g && targetColor.b != color.b) {
+    if (targetColor.r != color.r || targetColor.g != color.g || targetColor.b != color.b) {
         while (tumpukan.length > 0) {
             var titik = tumpukan.pop();
             var index = getIndex(titik, canvas);
