@@ -145,10 +145,27 @@ function drawPolygon(imageData, coordinates, color, canvas) {
 function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, rotate, color, canvas) {
     var angle = Math.PI * 2 / vertices;
     var coordinates = [];
-
+    var coX, coY;
     for (var x = 0; x < vertices; x++) {
-        var coX = radius * Math.sin(angle * x);
-        var coY = -radius * Math.cos(angle * x);
+        coX = radius * Math.sin(angle * x);
+        coY = -radius * Math.cos(angle * x);
+        coordinates.push(rotationFixed({ x: Math.round(coX + coordinateCenter.x), y: Math.round(coY + coordinateCenter.y) }, coordinateCenter, degToRad(rotate)));
+    }
+    drawPolygon(imageData, coordinates, color, canvas);
+}
+
+function drawStar(imageData, coordinateCenter, radius, vertices, rotate, color, canvas) {
+    var angle = Math.PI * 2 / vertices;
+    var coordinates = [];
+    var coX, coY;
+    for (var x = 0; x < vertices * 2; x++) {
+        if (x % 2 == 0) {
+            coX = radius * Math.sin(angle * x);
+            coY = -radius * Math.cos(angle * x);
+        } else {
+            coX = (radius - radius / 2) * Math.sin(angle * x);
+            coY = -(radius - radius / 2) * Math.cos(angle * x);
+        }
         coordinates.push(rotationFixed({ x: Math.round(coX + coordinateCenter.x), y: Math.round(coY + coordinateCenter.y) }, coordinateCenter, degToRad(rotate)));
     }
     drawPolygon(imageData, coordinates, color, canvas);
@@ -231,12 +248,12 @@ function drawFullCircle(imageData, center, radius, color, canvas) {
 }
 
 
-function drawEllipse(imageData, center, radiusX, radiusY, color, canvas) {
+function drawEllipse(imageData, center, radiusX, radiusY, rotate, color, canvas) {
     for (var x = 0; x < Math.PI * 2; x += 0.01) {
         var dx = center.x + radiusX * Math.cos(x);
         var dy = center.y + radiusY * Math.sin(x);
 
-        drawDot(imageData, { x: Math.ceil(dx), y: Math.ceil(dy) }, color, canvas);
+        drawDot(imageData, rotationFixed({ x: Math.ceil(dx), y: Math.ceil(dy) }, center, degToRad(rotate)), color, canvas);
     }
 }
 
@@ -259,12 +276,12 @@ function drawSpiral(imageData, center, radius, color, canvas) {
     }
 }
 
-function drawcardioid(imageData, center, radius, color, canvas) {
+function drawcardioid(imageData, center, radius, rotate, color, canvas) {
     for (var x = 0; x <= Math.PI * 2; x += 0.01) {
         var dx = center.x + (radius + radius * Math.sin(x)) * Math.cos(x);
         var dy = center.y + (radius + radius * Math.sin(x)) * Math.sin(x);
 
-        drawDot(imageData, { x: Math.ceil(dx), y: Math.ceil(dy) }, color, canvas);
+        drawDot(imageData, rotationFixed({ x: Math.ceil(dx), y: Math.ceil(dy) }, center, degToRad(rotate)), color, canvas);
     }
 }
 

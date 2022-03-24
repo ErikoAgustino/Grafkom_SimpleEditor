@@ -94,6 +94,8 @@
                 value="Cardioid">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="gear" onclick="Select(this)"
                 value="Gear">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="star" onclick="Select(this)"
+                value="Star">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="cube" onclick="Select(this)"
                 value="Cube">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="export" onclick="DownloadAsPng()"
@@ -136,9 +138,12 @@
             <div style="display: none;" id="ellipseGroup">
                 <label for="ellipseRadiusX">Radius X</label><br>
                 <input type="number" min="5" max="500" value="30" id="ellipseRadiusX" class="buttonExtra">
-
+                <br>
                 <label for="ellipseRadiusY">Radius Y</label><br>
                 <input type="number" min="5" max="500" value="20" id="ellipseRadiusY" class="buttonExtra">
+                <br>
+                <label for="ellipseRotation">Rotation</label><br>
+                <input type="number" min="-360" max="360" value="0" id="ellipseRotation" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="polylineGroup">
@@ -154,7 +159,7 @@
                 <input type="number" min="3" max="500" value="3" id="polygonVertices" class="buttonExtra">
                 <br>
                 <label for="polygonRotation">Rotation</label><br>
-                <input type="number" min="3" max="500" value="0" id="polygonRotation" class="buttonExtra">
+                <input type="number" min="-360" max="360" value="0" id="polygonRotation" class="buttonExtra">
             </div>
 
             <div style="display: none;" id="leafGroup">
@@ -173,6 +178,10 @@
             <div style="display: none;" id="cardioidGroup">
                 <label for="cardioidRadius">Radius</label><br>
                 <input type="number" min="5" max="500" value="20" id="cardioidRadius" class="buttonExtra">
+                <br>
+                <label for="cardioidRotation">Rotation</label><br>
+                <input type="number" min="-360" max="360" value="0" id="cardioidRotation" class="buttonExtra">
+
             </div>
 
             <div style="display: none;" id="gearGroup">
@@ -180,12 +189,23 @@
                 <input type="number" min="5" max="500" value="100" id="gearRadius" class="buttonExtra">
             </div>
 
+            <div style="display: none;" id="starGroup">
+                <label for="starRadius">Radius</label><br>
+                <input type="number" min="2" max="500" value="50" id="starRadius" class="buttonExtra">
+                <br>
+                <label for="starVertices">Vertices</label><br>
+                <input type="number" min="2" max="500" value="10" id="starVertices" class="buttonExtra">
+                <br>
+                <label for="starRotation">Rotation</label><br>
+                <input type="number" min="-360" max="360" value="0" id="starRotation" class="buttonExtra">
+            </div>
+
             <div style="display: none;" id="cubeGroup">
                 <label for="cubeSize">Size</label><br>
                 <input type="number" min="5" max="500" value="20" id="cubeSize" class="buttonExtra">
                 <br>
                 <label for="cubeRotation">Rotation</label><br>
-                <input type="number" min="3" max="500" value="45" id="cubeRotation" class="buttonExtra">
+                <input type="number" min="-360" max="360" value="45" id="cubeRotation" class="buttonExtra">
             </div>
         </div>
     </div>
@@ -244,70 +264,84 @@
             if (selected != null) {
                 ghostCtx.clearRect(0, 0, ghostCanvas.width, ghostCanvas.height);
                 ghostImageData = ghostCtx.getImageData(0, 0, ghostCanvas.width, ghostCanvas.height);
+
+                switch (selected) {
+                    case "circle":
+                        var radius = document.querySelector("#radius").value;
+                        if (radius > 0) {
+                            drawCircle(ghostImageData, coordinate, parseInt(radius), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "ellipse":
+                        var radiusX = document.querySelector("#ellipseRadiusX").value;
+                        var radiusY = document.querySelector("#ellipseRadiusY").value;
+                        var ellipseRotation = document.querySelector("#ellipseRotation").value;
+
+                        if (radiusX > 0 && radiusY > 0) {
+                            drawEllipse(ghostImageData, coordinate, parseInt(radiusX), parseInt(radiusY), parseInt(ellipseRotation), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "polygon":
+                        var radiusPolygon = document.querySelector("#polygonRadius").value;
+                        var vertices = document.querySelector("#polygonVertices").value;
+                        var angle = document.querySelector("#polygonRotation").value;
+                        if (radiusPolygon > 0 && vertices > 0) {
+                            drawPolygonFixed(ghostImageData, coordinate, parseInt(radiusPolygon), parseInt(vertices), parseInt(angle), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "leaf":
+                        var leafRadius = document.querySelector("#leafRadius").value;
+                        var leafNum = document.querySelector("#leafNum").value;
+                        if (leafRadius > 0 && leafNum > 0) {
+                            drawLeaf(ghostImageData, coordinate, parseInt(leafRadius), parseInt(leafNum), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "spiral":
+                        var spiralRadius = document.querySelector("#spiralRadius").value;
+                        if (spiralRadius > 0) {
+                            drawSpiral(ghostImageData, coordinate, parseInt(spiralRadius), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "cardioid":
+                        var cardioidRadius = document.querySelector("#cardioidRadius").value;
+                        var cardioidRotation = document.querySelector("#cardioidRotation").value;
+                        if (cardioidRadius > 0) {
+                            drawcardioid(ghostImageData, coordinate, parseInt(cardioidRadius), parseInt(cardioidRotation), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "gear":
+                        var gearRadius = document.querySelector("#gearRadius").value;
+                        if (gearRadius > 0) {
+                            drawGear(ghostImageData, coordinate, parseInt(gearRadius), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "cube":
+                        var cubeSize = document.querySelector("#cubeSize").value;
+                        var cubeRotation = document.querySelector("#cubeRotation").value;
+                        if (cubeSize > 0) {
+                            drawCube(ghostImageData, coordinate, parseInt(cubeSize), parseInt(cubeRotation), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                    case "star":
+                        var starRadius = document.querySelector("#starRadius").value;
+                        var starVertices = document.querySelector("#starVertices").value;
+                        var starAngle = document.querySelector("#starRotation").value;
+                        if (starRadius > 0 && starVertices > 0) {
+                            drawStar(ghostImageData, coordinate, parseInt(starRadius), parseInt(starVertices), parseInt(starAngle), color, ghostCanvas);
+                            ghostCtx.putImageData(ghostImageData, 0, 0);
+                        }
+                        break;
+                }
             }
-            switch (selected) {
-                case "circle":
-                    var radius = document.querySelector("#radius").value;
-                    if (radius > 0) {
-                        drawCircle(ghostImageData, coordinate, parseInt(radius), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "ellipse":
-                    var radiusX = document.querySelector("#ellipseRadiusX").value;
-                    var radiusY = document.querySelector("#ellipseRadiusY").value;
-                    if (radiusX > 0 && radiusY > 0) {
-                        drawEllipse(ghostImageData, coordinate, parseInt(radiusX), parseInt(radiusY), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "polygon":
-                    var radiusPolygon = document.querySelector("#polygonRadius").value;
-                    var vertices = document.querySelector("#polygonVertices").value;
-                    var angle = document.querySelector("#polygonRotation").value;
-                    if (radiusPolygon > 0 && vertices > 0) {
-                        drawPolygonFixed(ghostImageData, coordinate, parseInt(radiusPolygon), parseInt(vertices), parseInt(angle), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "leaf":
-                    var leafRadius = document.querySelector("#leafRadius").value;
-                    var leafNum = document.querySelector("#leafNum").value;
-                    if (leafRadius > 0 && leafNum > 0) {
-                        drawLeaf(ghostImageData, coordinate, parseInt(leafRadius), parseInt(leafNum), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "spiral":
-                    var spiralRadius = document.querySelector("#spiralRadius").value;
-                    if (spiralRadius > 0) {
-                        drawSpiral(ghostImageData, coordinate, parseInt(spiralRadius), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "cardioid":
-                    var cardioidRadius = document.querySelector("#cardioidRadius").value;
-                    if (cardioidRadius > 0) {
-                        drawcardioid(ghostImageData, coordinate, parseInt(cardioidRadius), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "gear":
-                    var gearRadius = document.querySelector("#gearRadius").value;
-                    if (gearRadius > 0) {
-                        drawGear(ghostImageData, coordinate, parseInt(gearRadius), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-                case "cube":
-                    var cubeSize = document.querySelector("#cubeSize").value;
-                    var cubeRotation = document.querySelector("#cubeRotation").value;
-                    if (cubeSize > 0) {
-                        drawCube(ghostImageData, coordinate, parseInt(cubeSize), parseInt(cubeRotation), color, ghostCanvas);
-                        ghostCtx.putImageData(ghostImageData, 0, 0);
-                    }
-                    break;
-            }
+
         });
 
 
@@ -329,8 +363,9 @@
                 case "ellipse":
                     var radiusX = document.querySelector("#ellipseRadiusX").value;
                     var radiusY = document.querySelector("#ellipseRadiusY").value;
+                    var ellipseRotation = document.querySelector("#ellipseRotation").value;
                     if (radiusX > 0 && radiusY > 0) {
-                        drawEllipse(imageData, coordinate, parseInt(radiusX), parseInt(radiusY), color, mainCanvas);
+                        drawEllipse(imageData, coordinate, parseInt(radiusX), parseInt(radiusY), parseInt(ellipseRotation), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -375,8 +410,9 @@
                     break;
                 case "cardioid":
                     var cardioidRadius = document.querySelector("#cardioidRadius").value;
+                    var cardioidRotation = document.querySelector("#cardioidRotation").value;
                     if (cardioidRadius > 0) {
-                        drawcardioid(imageData, coordinate, parseInt(cardioidRadius), color, mainCanvas);
+                        drawcardioid(imageData, coordinate, parseInt(cardioidRadius), parseInt(cardioidRotation), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -392,6 +428,15 @@
                     var cubeRotation = document.querySelector("#cubeRotation").value;
                     if (cubeSize > 0) {
                         drawCube(imageData, coordinate, parseInt(cubeSize), parseInt(cubeRotation), color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
+                case "star":
+                    var starRadius = document.querySelector("#starRadius").value;
+                    var starVertices = document.querySelector("#starVertices").value;
+                    var starAngle = document.querySelector("#starRotation").value;
+                    if (starRadius > 0 && starVertices > 0) {
+                        drawStar(imageData, coordinate, parseInt(starRadius), parseInt(starVertices), parseInt(starAngle), color, mainCanvas);
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
@@ -466,6 +511,8 @@
             document.querySelector("#cardioidGroup").style.display = "none";
             document.querySelector("#gear").disabled = false;
             document.querySelector("#gearGroup").style.display = "none";
+            document.querySelector("#star").disabled = false;
+            document.querySelector("#starGroup").style.display = "none";
             document.querySelector("#cube").disabled = false;
             document.querySelector("#cubeGroup").style.display = "none";
         }
