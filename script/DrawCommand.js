@@ -60,7 +60,7 @@ function ddaLine(imageData, coordinate1, coordinate2, color, canvas) {
     }
 }
 
-function garis(img, coordinate1, coordinate2, color, canvas) {
+function ddaLine2(img, coordinate1, coordinate2, color, canvas) {
     var x1 = coordinate1.x;
     var y1 = coordinate1.y;
     var x2 = coordinate2.x;
@@ -127,7 +127,7 @@ function drawPolyline(imageData, coordinates, color, canvas) {
     var tempCoordinate = coordinates.shift();
 
     coordinates.forEach(element => {
-        garis(imageData, tempCoordinate, element, color, canvas);
+        ddaLine2(imageData, tempCoordinate, element, color, canvas);
         tempCoordinate = element;
     });
 }
@@ -136,10 +136,10 @@ function drawPolygon(imageData, coordinates, color, canvas) {
     var tempCoordinate = coordinates[0];
 
     for (var index = 1; index < coordinates.length; index++) {
-        garis(imageData, tempCoordinate, coordinates[index], color, canvas)
+        ddaLine2(imageData, tempCoordinate, coordinates[index], color, canvas)
         tempCoordinate = coordinates[index];
     };
-    garis(imageData, tempCoordinate, coordinates[0], color, canvas)
+    ddaLine2(imageData, tempCoordinate, coordinates[0], color, canvas)
 }
 
 function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, rotate, color, canvas) {
@@ -154,6 +154,25 @@ function drawPolygonFixed(imageData, coordinateCenter, radius, vertices, rotate,
     drawPolygon(imageData, coordinates, color, canvas);
 }
 
+function drawCube(imageData, coordinateCenter, size, rotate, color, canvas) {
+    var angle = Math.PI * 2 / 4;
+    var coordinates = [];
+    var coordinates2 = [];
+    var coordinateCenter2 = { x: Math.round(coordinateCenter.x + size / 2), y: Math.round(coordinateCenter.y + size / 2) };
+
+    for (var x = 0; x < 4; x++) {
+        var coX = size * Math.sin(angle * x);
+        var coY = -size * Math.cos(angle * x);
+        coordinates.push(rotationFixed({ x: Math.round(coX + coordinateCenter.x), y: Math.round(coY + coordinateCenter.y) }, coordinateCenter, degToRad(rotate)));
+        coordinates2.push(rotationFixed({ x: Math.round(coX + coordinateCenter2.x), y: Math.round(coY + coordinateCenter2.y) }, coordinateCenter2, degToRad(rotate)));
+    }
+
+    drawPolygon(imageData, coordinates, color, canvas);
+    drawPolygon(imageData, coordinates2, color, canvas);
+    for (var x = 0; x < 4; x++) {
+        ddaLine2(imageData, coordinates.pop(), coordinates2.pop(), color, canvas);
+    }
+}
 
 function drawSimpleCircle(imageData, center, radius, color, canvas) {
     for (var x = center.x - radius; x <= center.x + radius; x++) {

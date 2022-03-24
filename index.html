@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="script/DrawCommand.js"></script>
-    <title>Simple Editor</title>
+    <title>Simple Drawing Editor</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
@@ -40,14 +40,16 @@
             clear: both;
         }
 
-        .ghost {
-            position: absolute;
-            transition: 0s;
-            transform: translate(10%, -70%);
-            display: none;
+        .ghostCanvas {
+            z-index: 1;
+            opacity: 0.3;
         }
 
         .mainCanvas {
+            z-index: 0;
+        }
+
+        .canvasSty {
             border: 2px solid black;
             margin: auto;
             position: absolute;
@@ -64,8 +66,6 @@
 </head>
 
 <body>
-    <div id="cursor" class="ghost">
-    </div>
 
     <div class="row">
         <div class="column left w3-sidebar w3-light-grey w3-bar-block">
@@ -76,6 +76,8 @@
                 value="Fill">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="erase" onclick="Select(this)"
                 value="Erase">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="clear" onclick="ClearDrawing()"
+                value="Clear">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="circle" onclick="Select(this)"
                 value="Circle">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="ellipse" onclick="Select(this)"
@@ -92,13 +94,16 @@
                 value="Cardioid">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="gear" onclick="Select(this)"
                 value="Gear">
+            <input type="button" class="w3-bar-item w3-button buttonExtra" id="cube" onclick="Select(this)"
+                value="Cube">
             <input type="button" class="w3-bar-item w3-button buttonExtra" id="export" onclick="DownloadAsPng()"
                 value="Export Png">
         </div>
 
 
         <div class="column middle">
-            <canvas id="mainCanvas" class="mainCanvas" width="1175" height="785"></canvas>
+            <canvas id="mainCanvas" class="canvasSty mainCanvas" width="1175" height="785"></canvas>
+            <canvas id="ghostCanvas" class="canvasSty ghostCanvas" width="1175" height="785"></canvas>
         </div>
 
         <div class="column right">
@@ -172,67 +177,142 @@
 
             <div style="display: none;" id="gearGroup">
                 <label for="gearRadius">Radius</label><br>
-                <input type="number" min="5" max="500" value="20" id="gearRadius" class="buttonExtra">
+                <input type="number" min="5" max="500" value="100" id="gearRadius" class="buttonExtra">
+            </div>
+
+            <div style="display: none;" id="cubeGroup">
+                <label for="cubeSize">Size</label><br>
+                <input type="number" min="5" max="500" value="20" id="cubeSize" class="buttonExtra">
+                <br>
+                <label for="cubeRotation">Rotation</label><br>
+                <input type="number" min="3" max="500" value="45" id="cubeRotation" class="buttonExtra">
             </div>
         </div>
     </div>
 
     <script>
 
-        mainCanvas = document.querySelector("#mainCanvas");
-
-        var ctx;
-        ctx = mainCanvas.getContext("2d");
+        var mainCanvas = document.querySelector("#mainCanvas");
+        var ctx = mainCanvas.getContext("2d");
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
-
         var imageData = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+
+        var ghostCanvas = document.querySelector("#ghostCanvas");
+        var ghostCtx = ghostCanvas.getContext("2d");
+        var ghostImageData = ghostCtx.getImageData(0, 0, ghostCanvas.width, ghostCanvas.height);
 
         var selected = null;
         var polylineCoordinate = [];
-        var cursor = document.querySelector("#cursor");
 
         var isMouseDown = false;
 
-        mainCanvas.addEventListener('mousedown', (e) => {
+        ghostCanvas.addEventListener('mousedown', (e) => {
             isMouseDown = true;
         });
 
-        mainCanvas.addEventListener('mouseup', (e) => {
+        ghostCanvas.addEventListener('mouseup', (e) => {
             isMouseDown = false;
         });
 
-        //Draw and Erase
-        mainCanvas.addEventListener('mousemove', (e) => {
-            if (selected != null) {
-                cursor.style.left = e.clientX + "px";
-                cursor.style.top = e.clientY + "px";
+        ghostCanvas.addEventListener('mousemove', (e) => {
+            var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
+            var color = HextoRGB(document.querySelector("#color").value);
+            if (isMouseDown) {
+                switch (selected) {
+                    case "erase":
+                        var size = document.querySelector("#sizeErase").value;
+
+                        drawFullCircle(imageData, coordinate, parseInt(size), { r: 255, g: 255, b: 255, a: 255 }, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                        break;
+                    case "cryon":
+                        var size = document.querySelector("#sizeCryon").value;
+
+                        drawSimpleFullCircle(imageData, coordinate, parseInt(size), color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+
+                        break;
+                    case "pen":
+                        var size = document.querySelector("#sizeCryon").value;
+
+                        drawFullCircle(imageData, coordinate, parseInt(size), color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+
+                        break;
+                }
             }
-            if (selected == "erase" && isMouseDown) {
-                var size = document.querySelector("#sizeErase").value;
-                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
-
-                drawFullCircle(imageData, coordinate, size, { r: 255, g: 255, b: 255, a: 255 }, mainCanvas);
-                ctx.putImageData(imageData, 0, 0);
-            } else if (selected == "cryon" && isMouseDown) {
-                var size = document.querySelector("#sizeCryon").value;
-                var color = HextoRGB(document.querySelector("#color").value);
-                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
-
-                drawSimpleFullCircle(imageData, coordinate, size, color, mainCanvas);
-                ctx.putImageData(imageData, 0, 0);
-            } else if (selected == "pen" && isMouseDown) {
-                var size = document.querySelector("#sizeCryon").value;
-                var color = HextoRGB(document.querySelector("#color").value);
-                var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
-
-                drawFullCircle(imageData, coordinate, size, color, mainCanvas);
-                ctx.putImageData(imageData, 0, 0);
+            if (selected != null) {
+                ghostCtx.clearRect(0, 0, ghostCanvas.width, ghostCanvas.height);
+                ghostImageData = ghostCtx.getImageData(0, 0, ghostCanvas.width, ghostCanvas.height);
+            }
+            switch (selected) {
+                case "circle":
+                    var radius = document.querySelector("#radius").value;
+                    if (radius > 0) {
+                        drawCircle(ghostImageData, coordinate, parseInt(radius), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "ellipse":
+                    var radiusX = document.querySelector("#ellipseRadiusX").value;
+                    var radiusY = document.querySelector("#ellipseRadiusY").value;
+                    if (radiusX > 0 && radiusY > 0) {
+                        drawEllipse(ghostImageData, coordinate, parseInt(radiusX), parseInt(radiusY), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "polygon":
+                    var radiusPolygon = document.querySelector("#polygonRadius").value;
+                    var vertices = document.querySelector("#polygonVertices").value;
+                    var angle = document.querySelector("#polygonRotation").value;
+                    if (radiusPolygon > 0 && vertices > 0) {
+                        drawPolygonFixed(ghostImageData, coordinate, parseInt(radiusPolygon), parseInt(vertices), parseInt(angle), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "leaf":
+                    var leafRadius = document.querySelector("#leafRadius").value;
+                    var leafNum = document.querySelector("#leafNum").value;
+                    if (leafRadius > 0 && leafNum > 0) {
+                        drawLeaf(ghostImageData, coordinate, parseInt(leafRadius), parseInt(leafNum), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "spiral":
+                    var spiralRadius = document.querySelector("#spiralRadius").value;
+                    if (spiralRadius > 0) {
+                        drawSpiral(ghostImageData, coordinate, parseInt(spiralRadius), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "cardioid":
+                    var cardioidRadius = document.querySelector("#cardioidRadius").value;
+                    if (cardioidRadius > 0) {
+                        drawcardioid(ghostImageData, coordinate, parseInt(cardioidRadius), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "gear":
+                    var gearRadius = document.querySelector("#gearRadius").value;
+                    if (gearRadius > 0) {
+                        drawGear(ghostImageData, coordinate, parseInt(gearRadius), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
+                case "cube":
+                    var cubeSize = document.querySelector("#cubeSize").value;
+                    var cubeRotation = document.querySelector("#cubeRotation").value;
+                    if (cubeSize > 0) {
+                        drawCube(ghostImageData, coordinate, parseInt(cubeSize), parseInt(cubeRotation), color, ghostCanvas);
+                        ghostCtx.putImageData(ghostImageData, 0, 0);
+                    }
+                    break;
             }
         });
 
-        //Object 2d
-        mainCanvas.addEventListener('click', (e) => {
+
+        ghostCanvas.addEventListener('click', (e) => {
             var color = HextoRGB(document.querySelector("#color").value);
             var coordinate = { x: e.clientX - mainCanvas.offsetLeft, y: e.clientY - mainCanvas.offsetTop };
             switch (selected) {
@@ -308,6 +388,14 @@
                         ctx.putImageData(imageData, 0, 0);
                     }
                     break;
+                case "cube":
+                    var cubeSize = document.querySelector("#cubeSize").value;
+                    var cubeRotation = document.querySelector("#cubeRotation").value;
+                    if (cubeSize > 0) {
+                        drawCube(imageData, coordinate, parseInt(cubeSize), parseInt(cubeRotation), color, mainCanvas);
+                        ctx.putImageData(imageData, 0, 0);
+                    }
+                    break;
             }
         });
 
@@ -320,9 +408,6 @@
             } catch (e) {
                 console.log("no attribute")
             }
-            // cursor.style.display = "block";
-            // var text = document.createTextNode(data.id);
-            // cursor.appendChild(text);
             selected = data.id;
         }
 
@@ -331,6 +416,16 @@
             var g = parseInt(hex.substr(3, 2), 16);
             var b = parseInt(hex.substr(5, 2), 16);
             return { r: r, g: g, b: b, a: 255 };
+        }
+
+        function ClearDrawing() {
+            var confirm = window.confirm("Clear Drawing?");
+            if (confirm) {
+                ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+                imageData = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+            }
         }
 
         //https://gist.github.com/Kaundur/2aca9a9edb003555f44195e826af4084
@@ -345,6 +440,9 @@
         function reset() {
             selected = null;
             polylineCoordinate = [];
+
+            ghostCtx.clearRect(0, 0, ghostCanvas.width, ghostCanvas.height);
+            ghostImageData = ghostCtx.getImageData(0, 0, ghostCanvas.width, ghostCanvas.height);
 
             document.querySelector("#pen").disabled = false;
             document.querySelector("#penGroup").style.display = "none";
@@ -369,10 +467,11 @@
             document.querySelector("#cardioidGroup").style.display = "none";
             document.querySelector("#gear").disabled = false;
             document.querySelector("#gearGroup").style.display = "none";
+            document.querySelector("#cube").disabled = false;
+            document.querySelector("#cubeGroup").style.display = "none";
         }
 
         ctx.putImageData(imageData, 0, 0);
-
     </script>
 </body>
 
